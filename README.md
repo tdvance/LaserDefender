@@ -1,6 +1,6 @@
 #Laser Defender
 
-Game Design Document from UDEMY course(http://www.CompleteUnityDeveloper.com)
+Game Design Document from "UDEMY course"(http://www.CompleteUnityDeveloper.com)
 
 
 
