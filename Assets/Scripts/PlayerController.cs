@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour {
     private float xmin;
     private float xmax;
     private float padding = 1f;
+    public float health = 250;
+
 
     public GameObject projectile;
     public float projectile_speed = 10f;
@@ -54,5 +56,20 @@ public class PlayerController : MonoBehaviour {
     {
         GameObject fired_projectile = Instantiate(projectile, transform.position, Quaternion.identity) as GameObject;
         fired_projectile.GetComponent<Rigidbody2D>().velocity = new Vector3(0, projectile_speed, 0);
+    }
+
+
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        EnemyProjectile projectile = collider.gameObject.GetComponent<EnemyProjectile>();
+        if (projectile)
+        {
+            projectile.Hit();
+            health -= projectile.GetDamage();
+            if (health <= 0)
+            {
+                Destroy(gameObject);
+            }
+        }
     }
 }
