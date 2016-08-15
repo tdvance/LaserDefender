@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class PlayerController : MonoBehaviour {
 
@@ -10,8 +11,12 @@ public class PlayerController : MonoBehaviour {
     private float xmax;
     private float padding = 1f;
 
-	// Use this for initialization
-	void Start () {
+    public GameObject projectile;
+    public float projectile_speed = 10f;
+    public float firing_rate = 1f;
+
+    // Use this for initialization
+    void Start () {
         //for movement---y and z stay the same.
         shipY = gameObject.transform.position.y;
         shipZ = gameObject.transform.position.z;
@@ -33,5 +38,21 @@ public class PlayerController : MonoBehaviour {
             x = Mathf.Clamp(x + speed * Time.deltaTime, xmin, xmax);
             gameObject.transform.position = new Vector3(x, shipY, shipZ);
         }
+
+        // if spacebar pressed, spawn projectile
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            InvokeRepeating("Fire", 0.000001f, firing_rate);
+        }
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            CancelInvoke("Fire");
+        }
+    }
+
+    void Fire()
+    {
+        GameObject fired_projectile = Instantiate(projectile, transform.position, Quaternion.identity) as GameObject;
+        fired_projectile.GetComponent<Rigidbody2D>().velocity = new Vector3(0, projectile_speed, 0);
     }
 }
