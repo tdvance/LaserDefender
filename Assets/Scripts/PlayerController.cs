@@ -11,6 +11,10 @@ public class PlayerController : MonoBehaviour {
     private float xmax;
     private float padding = 1f;
     public float health = 250;
+    public bool autoplay = false;
+
+    private float dx = 1f;
+    private bool firing = false;
 
 
     public GameObject projectile;
@@ -28,19 +32,68 @@ public class PlayerController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+        if (autoplay)
+        {
+            moveRandomly();
+            fireRandomly();
+
+        }
+        else
+        {
+            moveWithKeypresses();
+            fireWithKeypress();
+        }
+
+    }
+    
+    void moveRandomly()
+    {
+        float x = gameObject.transform.position.x;
+        if (UnityEngine.Random.value / Time.deltaTime < 1 || x==xmin || x==xmax)
+        {
+            dx = -dx;
+        }
+        x = Mathf.Clamp(x + dx* speed * Time.deltaTime, xmin, xmax);
+        gameObject.transform.position = new Vector3(x, shipY, shipZ);
+    }
+
+    void fireRandomly()
+    {
+        if (UnityEngine.Random.value/ Time.deltaTime < 10f)
+        {
+            if (firing)
+            {
+                CancelInvoke("Fire");
+                firing = false;
+            }
+            else
+            {
+                InvokeRepeating("Fire", 0.000001f, firing_rate);
+                firing = true;
+            }
+        }
+    }
+
+    void moveWithKeypresses()
+    {
 
         //Move the ship left or right in response to left-arrow or right-arrow keypress
         float x = gameObject.transform.position.x;
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            x = Mathf.Clamp(x - speed*Time.deltaTime, xmin, xmax);
+            x = Mathf.Clamp(x - speed * Time.deltaTime, xmin, xmax);
             gameObject.transform.position = new Vector3(x, shipY, shipZ);
-        }else if (Input.GetKey(KeyCode.RightArrow))
+        }
+        else if (Input.GetKey(KeyCode.RightArrow))
         {
             x = Mathf.Clamp(x + speed * Time.deltaTime, xmin, xmax);
             gameObject.transform.position = new Vector3(x, shipY, shipZ);
         }
 
+    }
+
+    void fireWithKeypress()
+    {
         // if spacebar pressed, spawn projectile
         if (Input.GetKeyDown(KeyCode.Space))
         {

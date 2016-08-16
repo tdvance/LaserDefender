@@ -10,11 +10,13 @@ public class EnemyControl : MonoBehaviour {
     public float firing_rate = 1f;
     private float fire_time = 0f;
     private PlayerController playerController;
+    public int pointValue = 150;
+    private ScoreKeeper scoreKeeper;
 
     // Use this for initialization
     void Start () {
         playerController = FindObjectOfType<PlayerController>();
-
+        scoreKeeper = GameObject.Find("Score").GetComponent<ScoreKeeper>();
     }
 	
 	// Update is called once per frame
@@ -61,10 +63,16 @@ public class EnemyControl : MonoBehaviour {
             health -= projectile.GetDamage();
             if(health <= 0)
             {
-                Destroy(gameObject);
+                die();
             }
         }
     }
 
-    
+    void die()
+    {
+        scoreKeeper.Score(pointValue);
+        Destroy(gameObject);
+    }
+
+
 }
