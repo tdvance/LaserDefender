@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class EnemySpawner : MonoBehaviour {
 
@@ -12,6 +13,7 @@ public class EnemySpawner : MonoBehaviour {
     private float xmin;
     private float xmax;
     private float dx;
+    public float spawndelay=0.5f;
 
     // Use this for initialization
     void Start () {
@@ -27,10 +29,30 @@ public class EnemySpawner : MonoBehaviour {
         dx = speed;
 
         //spawn the enemies at the selected positions (children of transform) in the formation.
+        SpawnUntilFull();
+
+    }
+
+    public void spawnEnemies()
+    {
         foreach (Transform child in transform)
         {
             GameObject enemy = Instantiate(enemyPrefab, child.transform.position, Quaternion.identity) as GameObject;
             enemy.transform.parent = child;
+        }
+    }
+
+    public void SpawnUntilFull()
+    {
+        Transform pos = NextFreePosition();
+        if (pos)
+        {
+            GameObject enemy = Instantiate(enemyPrefab, pos.position, Quaternion.identity) as GameObject;
+            enemy.transform.parent = pos;
+        }
+        if (NextFreePosition())
+        {
+            Invoke("SpawnUntilFull", spawndelay);
         }
     }
 
@@ -54,7 +76,35 @@ public class EnemySpawner : MonoBehaviour {
         }
         gameObject.transform.position = new Vector3(x, formationY, formationZ);
 
+        if (AllMembersDead())
+        {
+            //respawn a new set of enemies
+            SpawnUntilFull();
+        }
 
+    }
 
+    private Transform NextFreePosition()
+    {
+        foreach (Transform childPositionGameObject in transform)
+        {
+            if (childPositionGameObject.childCount == 0)
+            {
+                return childPositionGameObject;
+            }
+        }
+        return null;
+    }
+
+    private bool AllMembersDead()
+    {
+        foreach(Transform childPositionGameObject in transform)
+        {
+            if (childPositionGameObject.childCount > 0)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
