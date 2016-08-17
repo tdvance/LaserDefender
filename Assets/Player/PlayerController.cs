@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.SceneManagement;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 public class PlayerController : MonoBehaviour {
 
@@ -23,7 +26,10 @@ public class PlayerController : MonoBehaviour {
 
     public AudioClip fire;
     public AudioClip die;
-
+    private float screenDuration = 5f;
+    public string loseScreen = "Lose";
+    private bool alive = true;
+    public static bool isAlive;
 
     // Use this for initialization
     void Start () {
@@ -32,22 +38,32 @@ public class PlayerController : MonoBehaviour {
         shipZ = gameObject.transform.position.z;
         xmin = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, shipZ - Camera.main.transform.position.z)).x + padding;
         xmax = Camera.main.ViewportToWorldPoint(new Vector3(1f, 0f, shipZ - Camera.main.transform.position.z)).x - padding;
+        isAlive = alive;
     }
 
     // Update is called once per frame
     void Update () {
-        if (autoplay)
+        isAlive = alive;
+        if (alive)
         {
-            moveRandomly();
-            fireRandomly();
+            if (autoplay)
+            {
+                moveRandomly();
+                fireRandomly();
 
+            }
+            else
+            {
+                moveWithKeypresses();
+                fireWithKeypress();
+            }
         }
-        else
-        {
-            moveWithKeypresses();
-            fireWithKeypress();
+        if(autoplay){
+            if (Input.anyKey || Input.GetMouseButton(0))
+            {
+                StartGameForReal();
+            }
         }
-
     }
     
     void moveRandomly()
@@ -113,20 +129,23 @@ public class PlayerController : MonoBehaviour {
     {
         GameObject fired_projectile = Instantiate(projectile, transform.position, Quaternion.identity) as GameObject;
         fired_projectile.GetComponent<Rigidbody2D>().velocity = new Vector3(0, projectile_speed, 0);
-        AudioSource.PlayClipAtPoint(fire, transform.position, 1.0f);
+        AudioSource.PlayClipAtPoint(fire, Camera.main.transform.position, 1.0f);
     }
 
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        EnemyProjectile projectile = collider.gameObject.GetComponent<EnemyProjectile>();
-        if (projectile)
+        if (alive)
         {
-            projectile.Hit();
-            health -= projectile.GetDamage();
-            if (health <= 0)
+            EnemyProjectile projectile = collider.gameObject.GetComponent<EnemyProjectile>();
+            if (projectile)
             {
-                Die();
+                projectile.Hit();
+                health -= projectile.GetDamage();
+                if (health <= 0)
+                {
+                    Die();
+                }
             }
         }
     }
@@ -134,8 +153,33 @@ public class PlayerController : MonoBehaviour {
 
     void Die()
     {
+        ScoreKeeper.SaveHighScore();
+        alive = false;
+        CancelInvoke("Fire");
+        AudioSource.PlayClipAtPoint(die, Camera.main.transform.position, 1.0f);
+
+        if (screenDuration > 0)
+        {
+            Invoke("LoseScreen", screenDuration);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+    }
+
+    void LoseScreen()
+    {
+        Debug.Log("Lose Screen: " + loseScreen);
+        SceneManager.LoadScene(loseScreen);
         Destroy(gameObject);
-        AudioSource.PlayClipAtPoint(die, transform.position, 1.0f);
+    }
+
+    void StartGameForReal()
+    {
+        Debug.Log("Start game for real");
+        SceneManager.LoadScene("Game");
     }
 
 }

@@ -31,15 +31,20 @@ public class EnemyControl : MonoBehaviour {
             {
                 if(diff < 0.25)
                 {
-                    Fire();
+                    if (PlayerController.isAlive)
+                    {
+                        Fire();
+                    }
                 }
             }else
             {
                 float dist = Mathf.Abs(transform.position.y - playerController.transform.position.y);
                 if (Mathf.Abs(dist - diff) < 0.25)
                 {
-                    Fire();
-                
+                    if (PlayerController.isAlive)
+                    {
+                        Fire();
+                    }
                 }
             }
         }
@@ -53,7 +58,7 @@ public class EnemyControl : MonoBehaviour {
             GameObject fired_projectile = Instantiate(projectile, transform.position, Quaternion.identity) as GameObject;
             fired_projectile.GetComponent<Rigidbody2D>().velocity = new Vector3(0, -projectile_speed, 0);
             fire_time = 0;
-            AudioSource.PlayClipAtPoint(fire, transform.position, 1.0f);
+            AudioSource.PlayClipAtPoint(fire, Camera.main.transform.position, 1.0f);
         }
     }
 
@@ -75,7 +80,7 @@ public class EnemyControl : MonoBehaviour {
     {
         scoreKeeper.Score(pointValue);
         Destroy(gameObject);
-        AudioSource.PlayClipAtPoint(die, transform.position, 0.5f);
+        AudioSource.PlayClipAtPoint(die, Camera.main.transform.position, 0.5f);
 
     }
 

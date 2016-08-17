@@ -34,14 +34,15 @@ public class GenericMenu : MonoBehaviour {
         }
     }
 
-    private void StartGame()
+    protected void StartGame()
     {
         Debug.Log("Start Game: " + gameScreen);
         SceneManager.LoadScene(gameScreen);
 
     }
 
-    private void checkButtonClicks()
+    
+     void checkButtonClicks()
     {
         if (Input.GetMouseButton(0))
         {
@@ -49,9 +50,19 @@ public class GenericMenu : MonoBehaviour {
         }
     }
 
-    void NextScreen()
+    protected void NextScreen()
     {
         Debug.Log("Next Screen: " + nextScreen);
         SceneManager.LoadScene(nextScreen);
+    }
+
+    protected void SetTitle(string s)
+    {
+        title.text = s;
+    }
+
+    protected void SetSubtitle(string s)
+    {
+        subtitle.text = s;
     }
 }
