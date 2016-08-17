@@ -21,6 +21,10 @@ public class PlayerController : MonoBehaviour {
     public float projectile_speed = 10f;
     public float firing_rate = 1f;
 
+    public AudioClip fire;
+    public AudioClip die;
+
+
     // Use this for initialization
     void Start () {
         //for movement---y and z stay the same.
@@ -109,6 +113,7 @@ public class PlayerController : MonoBehaviour {
     {
         GameObject fired_projectile = Instantiate(projectile, transform.position, Quaternion.identity) as GameObject;
         fired_projectile.GetComponent<Rigidbody2D>().velocity = new Vector3(0, projectile_speed, 0);
+        AudioSource.PlayClipAtPoint(fire, transform.position, 1.0f);
     }
 
 
@@ -121,8 +126,16 @@ public class PlayerController : MonoBehaviour {
             health -= projectile.GetDamage();
             if (health <= 0)
             {
-                Destroy(gameObject);
+                Die();
             }
         }
     }
+
+
+    void Die()
+    {
+        Destroy(gameObject);
+        AudioSource.PlayClipAtPoint(die, transform.position, 1.0f);
+    }
+
 }

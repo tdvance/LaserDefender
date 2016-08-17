@@ -12,6 +12,8 @@ public class EnemyControl : MonoBehaviour {
     private PlayerController playerController;
     public int pointValue = 150;
     private ScoreKeeper scoreKeeper;
+    public AudioClip fire;
+    public AudioClip die;
 
     // Use this for initialization
     void Start () {
@@ -51,6 +53,7 @@ public class EnemyControl : MonoBehaviour {
             GameObject fired_projectile = Instantiate(projectile, transform.position, Quaternion.identity) as GameObject;
             fired_projectile.GetComponent<Rigidbody2D>().velocity = new Vector3(0, -projectile_speed, 0);
             fire_time = 0;
+            AudioSource.PlayClipAtPoint(fire, transform.position, 1.0f);
         }
     }
 
@@ -63,15 +66,17 @@ public class EnemyControl : MonoBehaviour {
             health -= projectile.GetDamage();
             if(health <= 0)
             {
-                die();
+                Die();
             }
         }
     }
 
-    void die()
+    void Die()
     {
         scoreKeeper.Score(pointValue);
         Destroy(gameObject);
+        AudioSource.PlayClipAtPoint(die, transform.position, 0.5f);
+
     }
 
 
