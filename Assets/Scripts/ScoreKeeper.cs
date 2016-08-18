@@ -71,7 +71,7 @@ public class ScoreKeeper : MonoBehaviour {
             Debug.Log("Loading high score:" + highScore + " from: " + save_filename);
         }else
         {
-            highScore = 4050;
+            highScore = 7650; // this is the random autoplay best score left running overnight.
         }
     }
 

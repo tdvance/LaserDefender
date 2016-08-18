@@ -69,9 +69,16 @@ public class PlayerController : MonoBehaviour {
     void moveRandomly()
     {
         float x = gameObject.transform.position.x;
-        if (UnityEngine.Random.value / Time.deltaTime < 1 || x==xmin || x==xmax)
+        if (UnityEngine.Random.value / Time.deltaTime < 0.5f)
         {
-            dx = -dx;
+           dx = -dx;
+        }else
+        {
+            EnemyProjectile ep = FindObjectOfType<EnemyProjectile>();
+            if (ep && UnityEngine.Random.value / Time.deltaTime < 1 || x==xmin || x==xmax)
+            {
+                dx = -dx;
+            }
         }
         x = Mathf.Clamp(x + dx* speed * Time.deltaTime, xmin, xmax);
         gameObject.transform.position = new Vector3(x, shipY, shipZ);
@@ -79,7 +86,7 @@ public class PlayerController : MonoBehaviour {
 
     void fireRandomly()
     {
-        if (UnityEngine.Random.value/ Time.deltaTime < 10f)
+        if (UnityEngine.Random.value/ Time.deltaTime < 15f)
         {
             if (firing)
             {
